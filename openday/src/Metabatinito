@@ -1,0 +1,197 @@
+#!/usr/bin/env python
+# license removed for brevity
+import rospy
+import RPi.GPIO as GPIO
+from sensor_msgs.msg import Joy
+import time
+
+global principal, izq_der, arriba_abajo, antihorario, horario
+
+principal = 0
+izq_der = 0
+arriba_abajo = 0
+antihorario = 0
+horario = 0
+
+def callback(data):
+    global principal, izq_der, arriba_abajo, antihorario, horario
+
+    principal = data.buttons[2]
+    izq_der = data.axes[0]
+    arriba_abajo = data.axes[1]
+
+    antihorario = data.buttons[4]
+    horario = data.buttons[5]
+
+def inicio():
+    global principal, izq_der, arriba_abajo, antihorario, horario
+    rospy.init_node('metabatinito', anonymous=True)
+    rospy.Subscriber("/joy", Joy, callback)
+    
+
+    GPIO.setmode(GPIO.BOARD)
+
+    GPIO.setup( 7,GPIO.OUT) #Dir 1
+    GPIO.setup(11,GPIO.OUT) #PWM 1
+
+    GPIO.setup(12,GPIO.OUT) #Dir 2
+    GPIO.setup(15,GPIO.OUT) #PWM 2
+
+    GPIO.setup(16,GPIO.OUT) #Dir 3
+    GPIO.setup(18,GPIO.OUT) #PWM 3
+
+    GPIO.setup(25,GPIO.OUT) #Dir 4
+    GPIO.setup(29,GPIO.OUT) #PWM 4
+
+    pwm1 = GPIO.PWM(11,500)
+    pwm2 = GPIO.PWM(15,500)
+    pwm3 = GPIO.PWM(18,500)
+    pwm4 = GPIO.PWM(29,500)
+
+    pwm1.start(0)
+    pwm2.start(0)
+    pwm3.start(0)
+    pwm4.start(0)
+
+
+    rate = rospy.Rate(10) # 10hz
+    count = 0
+    while not rospy.is_shutdown():
+        print(principal,izq_der,arriba_abajo)
+
+        if(principal == 1): #Defrente
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+
+        elif(principal == 1 and izq_der == 1): #Izquierda
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+        elif(principal == 1 and izq_der == -1): #Derecha
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+
+        elif(principal == 1 and izq_der == 1 and arriba_abajo == 1): #Diagonal Arriba Izquierda
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+
+        elif(principal == 1 and izq_der == -1 and arriba_abajo == 1): #Diagonal Arriba Derecha
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+
+        elif(principal == 1 and izq_der == 1 and arriba_abajo == -1): #Diagonal Abajo Izquierda
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+        elif(principal == 1 and izq_der == -1 and arriba_abajo == -1): #Diagonal Abajo Derecha
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+        elif(horario == 1):
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+        elif(antihorario == 1):
+            GPIO.output(7, True)
+            GPIO.output(12, True)
+            GPIO.output(16, True)
+            GPIO.output(25, True)
+
+
+            pwm1.ChangeDutyCycle(50)
+            pwm2.ChangeDutyCycle(50)
+            pwm3.ChangeDutyCycle(50)
+            pwm4.ChangeDutyCycle(50)
+
+
+
+        else:
+
+            GPIO.output( 7, False)
+            GPIO.output(12, False)
+            GPIO.output(16, False)
+            GPIO.output(25, False)
+
+
+            pwm1.ChangeDutyCycle(0)
+            pwm2.ChangeDutyCycle(0)
+            pwm3.ChangeDutyCycle(0)
+            pwm4.ChangeDutyCycle(0)
+
+
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        inicio()
+    except rospy.ROSInterruptException:
+        pass
+
